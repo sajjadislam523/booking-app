@@ -75,7 +75,7 @@ export default function SuccessPage() {
                     </div>
 
                     <Link href="/" className="block">
-                        <Button className="w-full rounded-xl h-11 text-sm">
+                        <Button className="w-full rounded-xl h-11 text-sm  cursor-pointer">
                             Back to Home
                         </Button>
                     </Link>

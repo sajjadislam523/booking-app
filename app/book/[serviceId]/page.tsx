@@ -93,7 +93,7 @@ export default function BookingPage({
     const today = new Date().toISOString().split("T")[0];
 
     return (
-        <main className="min-h-screen overflow-hidden">
+        <main className="min-h-screen">
             <AnimatedBackground />
 
             {/* Header */}
@@ -115,7 +115,7 @@ export default function BookingPage({
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-muted-foreground rounded-full"
+                                className="text-muted-foreground rounded-full cursor-pointer"
                             >
                                 <ArrowLeft className="w-4 h-4 mr-2" /> Services
                             </Button>
@@ -299,7 +299,7 @@ export default function BookingPage({
                         <Button
                             onClick={handleSubmit}
                             disabled={loading}
-                            className="w-full h-12 rounded-xl text-sm font-medium"
+                            className="w-full h-12 rounded-xl text-sm font-medium  cursor-pointer"
                         >
                             {loading ? (
                                 <>
