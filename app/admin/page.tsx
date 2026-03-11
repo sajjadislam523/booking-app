@@ -118,7 +118,11 @@ export default function AdminPage() {
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-3">
                         <Link href="/">
-                            <Button variant="ghost" size="sm">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="cursor-pointer"
+                            >
                                 <ArrowLeft className="w-4 h-4 mr-2" /> SwiftBook
                             </Button>
                         </Link>
@@ -133,7 +137,7 @@ export default function AdminPage() {
                             size="sm"
                             onClick={fetchBookings}
                             disabled={loading}
-                            className="rounded-full"
+                            className="rounded-full cursor-pointer"
                         >
                             {loading ? (
                                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -214,7 +218,7 @@ export default function AdminPage() {
                                 variant={filter === tab ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => setFilter(tab)}
-                                className="capitalize"
+                                className="capitalize cursor-pointer"
                             >
                                 {tab}
                                 <Badge
@@ -353,7 +357,7 @@ export default function AdminPage() {
                                                                     "paid",
                                                                 )
                                                             }
-                                                            className="text-xs h-7"
+                                                            className="text-xs h-7 cursor-pointer"
                                                         >
                                                             {updating ===
                                                             booking._id ? (
@@ -378,7 +382,7 @@ export default function AdminPage() {
                                                                     "cancelled",
                                                                 )
                                                             }
-                                                            className="text-xs h-7"
+                                                            className="text-xs h-7 cursor-pointer"
                                                         >
                                                             Cancel
                                                         </Button>
@@ -398,7 +402,7 @@ export default function AdminPage() {
                                                                     "pending",
                                                                 )
                                                             }
-                                                            className="text-xs h-7"
+                                                            className="text-xs h-7 cursor-pointer"
                                                         >
                                                             Pending
                                                         </Button>

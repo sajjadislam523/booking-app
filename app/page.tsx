@@ -10,11 +10,11 @@ import Link from "next/link";
 
 export default function Home() {
     return (
-        <main className="min-h-screen bg-background relative overflow-hidden">
+        <main className="min-h-screen ">
             <AnimatedBackground />
 
             {/* Header */}
-            <header className="border-b border-border/50 sticky top-0 z-50 bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
+            <header className="border-b border-border sticky top-0 z-50 bg-background/95 backdrop-blur supports-supports-backdrop-filter:bg-background/60">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-2">
                         <div className="w-7 h-7 bg-foreground rounded-lg flex items-center justify-center">
@@ -32,7 +32,7 @@ export default function Home() {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-muted-foreground hover:text-foreground"
+                                className="text-muted-foreground hover:text-foreground cursor-pointer"
                             >
                                 Admin
                             </Button>
@@ -43,7 +43,7 @@ export default function Home() {
             </header>
 
             {/* Hero */}
-            <section className="relative max-w-7xl mx-auto px-6 py-28 text-center">
+            <section className="relative max-w-7xl mx-auto px-6 pt-28 pb-20 text-center">
                 <div className="animate-fade-in-up">
                     <Badge
                         variant="outline"
@@ -73,7 +73,7 @@ export default function Home() {
                     <a href="#services">
                         <Button
                             size="lg"
-                            className="rounded-full px-8 h-12 text-sm font-medium"
+                            className="rounded-full px-8 h-12 text-sm font-medium cursor-pointer"
                         >
                             Browse Services{" "}
                             <ArrowRight className="w-4 h-4 ml-2" />
@@ -83,7 +83,7 @@ export default function Home() {
                         <Button
                             size="lg"
                             variant="outline"
-                            className="rounded-full px-8 h-12 text-sm font-medium border-border/60"
+                            className="rounded-full px-8 h-12 text-sm font-medium border-border/60 cursor-pointer"
                         >
                             Admin Dashboard
                         </Button>
@@ -176,9 +176,9 @@ export default function Home() {
                                 <Link href={`/book/${service.id}`}>
                                     <Button
                                         size="sm"
-                                        className="rounded-full text-xs px-5 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200"
+                                        className="rounded-full text-xs px-5 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200 cursor-pointer"
                                     >
-                                        Book Now{" "}
+                                        Book Now
                                         <ArrowRight className="w-3 h-3 ml-1" />
                                     </Button>
                                 </Link>

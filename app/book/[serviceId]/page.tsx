@@ -93,7 +93,7 @@ export default function BookingPage({
     const today = new Date().toISOString().split("T")[0];
 
     return (
-        <main className="min-h-screen bg-background relative overflow-hidden">
+        <main className="min-h-screen overflow-hidden">
             <AnimatedBackground />
 
             {/* Header */}
