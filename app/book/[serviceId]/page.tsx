@@ -273,7 +273,7 @@ export default function BookingPage({
                                     value={form.date}
                                     onChange={handleChange}
                                     min={today}
-                                    className="h-11 rounded-xl border-border/60 bg-background/50 [color-scheme:dark]"
+                                    className="h-11 rounded-xl border-border/60 bg-background/50 scheme-dark"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -289,7 +289,7 @@ export default function BookingPage({
                                     type="time"
                                     value={form.time}
                                     onChange={handleChange}
-                                    className="h-11 rounded-xl border-border/60 bg-background/50 [color-scheme:dark]"
+                                    className="h-11 rounded-xl border-border/60 bg-background/50 scheme-dark"
                                 />
                             </div>
                         </div>
