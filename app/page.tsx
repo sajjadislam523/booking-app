@@ -1,11 +1,7 @@
+import { ModeToggle } from "@/components/mode-toggle";
+import { AnimatedBackground } from "@/components/ui/animated-background";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { services } from "@/lib/services";
 import { Service } from "@/types";
@@ -14,46 +10,71 @@ import Link from "next/link";
 
 export default function Home() {
     return (
-        <main className="min-h-screen bg-background">
+        <main className="min-h-screen bg-background relative overflow-hidden">
+            <AnimatedBackground />
+
             {/* Header */}
-            <header className="border-b border-border sticky top-0 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+            <header className="border-b border-border/50 sticky top-0 z-50 bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        <Zap className="w-5 h-5 text-foreground" />
-                        <span className="font-bold text-xl tracking-tight">
+                        <div className="w-7 h-7 bg-foreground rounded-lg flex items-center justify-center">
+                            <Zap className="w-4 h-4 text-background" />
+                        </div>
+                        <span
+                            className="font-bold text-xl tracking-tight"
+                            style={{ fontFamily: "var(--font-syne)" }}
+                        >
                             SwiftBook
                         </span>
                     </div>
-                    <Link href="/admin">
-                        <Button variant="outline" size="sm">
-                            Admin Panel <ArrowRight className="w-4 h-4 ml-2" />
-                        </Button>
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <Link href="/admin">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-foreground"
+                            >
+                                Admin
+                            </Button>
+                        </Link>
+                        <ModeToggle />
+                    </div>
                 </div>
             </header>
 
             {/* Hero */}
-            <section className="max-w-7xl mx-auto px-6 py-24 text-center">
-                <Badge
-                    variant="secondary"
-                    className="mb-6 text-xs tracking-widest uppercase"
+            <section className="relative max-w-7xl mx-auto px-6 py-28 text-center">
+                <div className="animate-fade-in-up">
+                    <Badge
+                        variant="outline"
+                        className="mb-8 px-4 py-1.5 text-xs tracking-[0.2em] uppercase font-medium border-border/60"
+                    >
+                        Professional Services Platform
+                    </Badge>
+                </div>
+
+                <h1
+                    className="animate-fade-in-up delay-100 text-6xl md:text-8xl font-extrabold tracking-tight mb-6 leading-[0.95]"
+                    style={{ fontFamily: "var(--font-syne)" }}
                 >
-                    Professional Services
-                </Badge>
-                <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-none">
-                    Book Services
+                    Book Any
                     <br />
                     <span className="text-muted-foreground">
-                        Instantly Online
+                        Service Online
                     </span>
                 </h1>
-                <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-10">
-                    Choose from our range of professional services, book
-                    instantly, and pay securely with Stripe.
+
+                <p className="animate-fade-in-up delay-200 text-muted-foreground text-lg max-w-lg mx-auto mb-10 leading-relaxed font-light">
+                    Choose from professional services, book instantly, and pay
+                    securely with Stripe. Confirmation straight to your inbox.
                 </p>
-                <div className="flex items-center justify-center gap-4 flex-wrap">
+
+                <div className="animate-fade-in-up delay-300 flex items-center justify-center gap-4 flex-wrap">
                     <a href="#services">
-                        <Button size="lg" className="rounded-full px-8">
+                        <Button
+                            size="lg"
+                            className="rounded-full px-8 h-12 text-sm font-medium"
+                        >
                             Browse Services{" "}
                             <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
@@ -62,32 +83,32 @@ export default function Home() {
                         <Button
                             size="lg"
                             variant="outline"
-                            className="rounded-full px-8"
+                            className="rounded-full px-8 h-12 text-sm font-medium border-border/60"
                         >
-                            View Admin Panel
+                            Admin Dashboard
                         </Button>
                     </Link>
                 </div>
 
                 {/* Trust bar */}
-                <div className="mt-16 flex items-center justify-center gap-8 flex-wrap text-muted-foreground text-sm">
+                <div className="animate-fade-in-up delay-400 mt-16 flex items-center justify-center gap-10 flex-wrap">
                     {[
                         {
-                            icon: <Shield className="w-4 h-4" />,
+                            icon: <Shield className="w-3.5 h-3.5" />,
                             text: "Stripe Secured",
                         },
                         {
-                            icon: <Zap className="w-4 h-4" />,
+                            icon: <Zap className="w-3.5 h-3.5" />,
                             text: "Instant Confirmation",
                         },
                         {
-                            icon: <Clock className="w-4 h-4" />,
+                            icon: <Clock className="w-3.5 h-3.5" />,
                             text: "24/7 Availability",
                         },
                     ].map((item) => (
                         <div
                             key={item.text}
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 text-muted-foreground text-sm"
                         >
                             {item.icon}
                             <span>{item.text}</span>
@@ -96,81 +117,95 @@ export default function Home() {
                 </div>
             </section>
 
-            <Separator />
+            <Separator className="opacity-50" />
 
             {/* Services */}
-            <section id="services" className="max-w-7xl mx-auto px-6 py-24">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl font-bold tracking-tight mb-3">
+            <section
+                id="services"
+                className="relative max-w-7xl mx-auto px-6 py-24"
+            >
+                <div className="mb-16">
+                    <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3 font-medium">
+                        What We Offer
+                    </p>
+                    <h2
+                        className="text-4xl font-bold tracking-tight"
+                        style={{ fontFamily: "var(--font-syne)" }}
+                    >
                         Our Services
                     </h2>
-                    <p className="text-muted-foreground">
-                        Everything you need, all in one place
-                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {services.map((service: Service) => (
-                        <Card
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {services.map((service: Service, i: number) => (
+                        <div
                             key={service.id}
-                            className="group hover:border-foreground/50 transition-all duration-200 flex flex-col"
+                            className={`card-hover animate-fade-in-up delay-${((i % 5) + 1) * 100} group relative bg-card border border-border/60 rounded-2xl p-6 flex flex-col`}
                         >
-                            <CardHeader className="pb-3">
-                                <div className="text-3xl mb-3">
-                                    {service.icon}
-                                </div>
-                                <div className="flex items-start justify-between gap-2">
-                                    <h3 className="font-semibold text-lg leading-tight">
-                                        {service.name}
-                                    </h3>
-                                    <Badge
-                                        variant="secondary"
-                                        className="shrink-0 text-xs"
-                                    >
-                                        <Clock className="w-3 h-3 mr-1" />
-                                        {service.duration}
-                                    </Badge>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <p className="text-muted-foreground text-sm leading-relaxed">
-                                    {service.description}
-                                </p>
-                            </CardContent>
-                            <CardFooter className="flex items-center justify-between pt-4 border-t border-border">
-                                <span className="font-bold text-2xl">
+                            {/* Top */}
+                            <div className="flex items-start justify-between mb-5">
+                                <div className="text-3xl">{service.icon}</div>
+                                <Badge
+                                    variant="secondary"
+                                    className="text-xs font-normal text-muted-foreground"
+                                >
+                                    <Clock className="w-3 h-3 mr-1" />
+                                    {service.duration}
+                                </Badge>
+                            </div>
+
+                            {/* Content */}
+                            <h3
+                                className="font-bold text-lg mb-2 tracking-tight"
+                                style={{ fontFamily: "var(--font-syne)" }}
+                            >
+                                {service.name}
+                            </h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed flex-1">
+                                {service.description}
+                            </p>
+
+                            {/* Footer */}
+                            <div className="mt-6 pt-5 border-t border-border/50 flex items-center justify-between">
+                                <span
+                                    className="font-bold text-2xl"
+                                    style={{ fontFamily: "var(--font-syne)" }}
+                                >
                                     ${service.price}
                                 </span>
                                 <Link href={`/book/${service.id}`}>
                                     <Button
                                         size="sm"
-                                        className="rounded-full group-hover:gap-2 transition-all"
+                                        className="rounded-full text-xs px-5 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200"
                                     >
                                         Book Now{" "}
-                                        <ArrowRight className="w-4 h-4 ml-1" />
+                                        <ArrowRight className="w-3 h-3 ml-1" />
                                     </Button>
                                 </Link>
-                            </CardFooter>
-                        </Card>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </section>
 
             {/* Footer */}
-            <Separator />
-            <footer className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-muted-foreground text-sm">
+            <Separator className="opacity-50" />
+            <footer className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4" />
-                    <span className="font-semibold text-foreground">
+                    <div className="w-6 h-6 bg-foreground rounded-md flex items-center justify-center">
+                        <Zap className="w-3.5 h-3.5 text-background" />
+                    </div>
+                    <span
+                        className="font-bold text-sm"
+                        style={{ fontFamily: "var(--font-syne)" }}
+                    >
                         SwiftBook
                     </span>
                 </div>
-                <p>© 2025 SwiftBook. All rights reserved.</p>
-                <Link href="/admin">
-                    <Button variant="ghost" size="sm">
-                        Admin Panel
-                    </Button>
-                </Link>
+                <p className="text-muted-foreground text-xs">
+                    © 2025 SwiftBook. All rights reserved.
+                </p>
+                <ModeToggle />
             </footer>
         </main>
     );

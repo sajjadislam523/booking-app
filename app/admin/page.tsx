@@ -1,5 +1,25 @@
 "use client";
 
+import { ModeToggle } from "@/components/mode-toggle";
+import { AnimatedBackground } from "@/components/ui/animated-background";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { getErrorMessage } from "@/lib/errors";
+import {
+    ArrowLeft,
+    BookCheck,
+    CheckCircle2,
+    Clock,
+    DollarSign,
+    Loader2,
+    RefreshCw,
+    XCircle,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
 type Booking = {
     _id: string;
     userName: string;
@@ -12,21 +32,19 @@ type Booking = {
     stripeSessionId: string;
     createdAt: string;
 };
-import Link from "next/link";
-import { useEffect, useState } from "react";
 
-type BookingStatus = "pending" | "paid" | "cancelled";
+type BookingStatus = Booking["status"];
 
-const statusStyles: Record<BookingStatus, string> = {
-    paid: "bg-green-500/20 text-green-400 border-green-500/30",
-    pending: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    cancelled: "bg-red-500/20 text-red-400 border-red-500/30",
-};
-
-const statusIcons: Record<BookingStatus, string> = {
-    paid: "✅",
-    pending: "⏳",
-    cancelled: "❌",
+const statusConfig: Record<
+    BookingStatus,
+    {
+        label: string;
+        variant: "default" | "secondary" | "destructive" | "outline";
+    }
+> = {
+    paid: { label: "Paid", variant: "default" },
+    pending: { label: "Pending", variant: "secondary" },
+    cancelled: { label: "Cancelled", variant: "destructive" },
 };
 
 export default function AdminPage() {
@@ -37,13 +55,16 @@ export default function AdminPage() {
     const [filter, setFilter] = useState<"all" | BookingStatus>("all");
 
     const fetchBookings = async () => {
+        setLoading(true);
+        setError("");
         try {
             const res = await fetch("/api/bookings");
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error);
-            setBookings(data.bookings);
-        } catch (err: any) {
-            setError(err.message);
+            const data: { bookings?: Booking[]; error?: string } =
+                await res.json();
+            if (!res.ok) throw new Error(data.error ?? "Failed to fetch");
+            setBookings(data.bookings ?? []);
+        } catch (err) {
+            setError(getErrorMessage(err));
         } finally {
             setLoading(false);
         }
@@ -61,14 +82,14 @@ export default function AdminPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id, status }),
             });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error);
-
+            const data: { booking?: Booking; error?: string } =
+                await res.json();
+            if (!res.ok) throw new Error(data.error ?? "Failed to update");
             setBookings((prev) =>
                 prev.map((b) => (b._id === id ? { ...b, status } : b)),
             );
-        } catch (err: any) {
-            alert("Failed to update: " + err.message);
+        } catch (err) {
+            alert(getErrorMessage(err));
         } finally {
             setUpdating(null);
         }
@@ -79,7 +100,6 @@ export default function AdminPage() {
             ? bookings
             : bookings.filter((b) => b.status === filter);
 
-    // Stats
     const stats = {
         total: bookings.length,
         paid: bookings.filter((b) => b.status === "paid").length,
@@ -91,120 +111,151 @@ export default function AdminPage() {
     };
 
     return (
-        <main className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+        <main className="min-h-screen ">
+            <AnimatedBackground />
             {/* Header */}
-            <header className="border-b border-white/10 backdrop-blur-sm sticky top-0 z-50">
+            <header className="border-b border-border sticky top-0 z-50 bg-background/95 backdrop-blur supports-supports-backdrop-filter:bg-background/60">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                        <Link href="/" className="flex items-center gap-2">
-                            <span className="text-2xl">⚡</span>
-                            <span className="text-white font-bold text-xl">
-                                DraSoft
-                            </span>
+                        <Link href="/">
+                            <Button variant="ghost" size="sm">
+                                <ArrowLeft className="w-4 h-4 mr-2" /> SwiftBook
+                            </Button>
                         </Link>
-                        <span className="text-white/20">/</span>
-                        <span className="text-purple-400 font-semibold">
+                        <Separator orientation="vertical" className="h-5" />
+                        <span className="font-semibold text-sm">
                             Admin Panel
                         </span>
                     </div>
-                    <button
-                        onClick={fetchBookings}
-                        className="text-sm text-white/60 hover:text-white border border-white/20 hover:border-white/40 px-4 py-2 rounded-lg transition-colors"
-                    >
-                        🔄 Refresh
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={fetchBookings}
+                            disabled={loading}
+                            className="rounded-full"
+                        >
+                            {loading ? (
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            ) : (
+                                <RefreshCw className="w-4 h-4 mr-2" />
+                            )}
+                            Refresh
+                        </Button>
+                        <ModeToggle />
+                    </div>
                 </div>
             </header>
 
-            <div className="max-w-7xl mx-auto px-6 py-10">
-                {/* Page Title */}
-                <div className="mb-8">
-                    <h1 className="text-white font-bold text-3xl mb-1">
+            <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
+                {/* Title */}
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">
                         Booking Management
                     </h1>
-                    <p className="text-white/40">
+                    <p className="text-muted-foreground mt-1">
                         View and manage all customer bookings
                     </p>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                {/* Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     {[
                         {
                             label: "Total Bookings",
                             value: stats.total,
-                            icon: "📋",
+                            icon: <BookCheck className="w-4 h-4" />,
                         },
-                        { label: "Paid", value: stats.paid, icon: "✅" },
-                        { label: "Pending", value: stats.pending, icon: "⏳" },
+                        {
+                            label: "Paid",
+                            value: stats.paid,
+                            icon: <CheckCircle2 className="w-4 h-4" />,
+                        },
+                        {
+                            label: "Pending",
+                            value: stats.pending,
+                            icon: <Clock className="w-4 h-4" />,
+                        },
                         {
                             label: "Cancelled",
                             value: stats.cancelled,
-                            icon: "❌",
+                            icon: <XCircle className="w-4 h-4" />,
                         },
                         {
-                            label: "Total Revenue",
+                            label: "Revenue",
                             value: `$${stats.revenue}`,
-                            icon: "💰",
+                            icon: <DollarSign className="w-4 h-4" />,
                         },
                     ].map((stat) => (
-                        <div
-                            key={stat.label}
-                            className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center"
-                        >
-                            <div className="text-2xl mb-2">{stat.icon}</div>
-                            <div className="text-white font-bold text-2xl">
-                                {stat.value}
-                            </div>
-                            <div className="text-white/40 text-xs mt-1">
-                                {stat.label}
-                            </div>
-                        </div>
+                        <Card key={stat.label}>
+                            <CardHeader className="pb-2">
+                                <div className="flex items-center justify-between text-muted-foreground">
+                                    <span className="text-xs">
+                                        {stat.label}
+                                    </span>
+                                    {stat.icon}
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-2xl font-bold">
+                                    {stat.value}
+                                </p>
+                            </CardContent>
+                        </Card>
                     ))}
                 </div>
 
                 {/* Filter Tabs */}
-                <div className="flex gap-2 mb-6 flex-wrap">
+                <div className="flex gap-2 flex-wrap">
                     {(["all", "paid", "pending", "cancelled"] as const).map(
                         (tab) => (
-                            <button
+                            <Button
                                 key={tab}
+                                variant={filter === tab ? "default" : "outline"}
+                                size="sm"
                                 onClick={() => setFilter(tab)}
-                                className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-                                    filter === tab
-                                        ? "bg-purple-600 text-white"
-                                        : "bg-white/5 text-white/50 hover:text-white border border-white/10"
-                                }`}
+                                className="capitalize"
                             >
-                                {tab} {tab === "all" ? `(${stats.total})` : ""}
-                            </button>
+                                {tab}
+                                <Badge
+                                    variant="secondary"
+                                    className="ml-2 text-xs"
+                                >
+                                    {tab === "all"
+                                        ? stats.total
+                                        : tab === "paid"
+                                          ? stats.paid
+                                          : tab === "pending"
+                                            ? stats.pending
+                                            : stats.cancelled}
+                                </Badge>
+                            </Button>
                         ),
                     )}
                 </div>
 
                 {/* Loading */}
                 {loading && (
-                    <div className="text-center py-20">
-                        <div className="inline-block w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4" />
-                        <p className="text-white/40">Loading bookings...</p>
+                    <div className="flex items-center justify-center py-20 gap-3 text-muted-foreground">
+                        <Loader2 className="w-6 h-6 animate-spin" />
+                        <span>Loading bookings...</span>
                     </div>
                 )}
 
                 {/* Error */}
                 {error && (
-                    <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-6 py-4 text-red-400">
-                        ⚠️ {error}
+                    <div className="flex items-center gap-2 text-destructive text-sm bg-destructive/10 border border-destructive/20 rounded-md px-4 py-3">
+                        <XCircle className="w-4 h-4 shrink-0" />
+                        <span>{error}</span>
                     </div>
                 )}
 
-                {/* Empty State */}
+                {/* Empty */}
                 {!loading && !error && filtered.length === 0 && (
-                    <div className="text-center py-20">
-                        <p className="text-5xl mb-4">📭</p>
-                        <p className="text-white/40 text-lg">
-                            No bookings found
-                        </p>
-                        <p className="text-white/20 text-sm mt-2">
+                    <div className="text-center py-20 text-muted-foreground">
+                        <BookCheck className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                        <p className="font-medium">No bookings found</p>
+                        <p className="text-sm mt-1">
                             {filter !== "all"
                                 ? `No ${filter} bookings yet`
                                 : "Bookings will appear here after payments"}
@@ -212,13 +263,13 @@ export default function AdminPage() {
                     </div>
                 )}
 
-                {/* Bookings Table */}
+                {/* Table */}
                 {!loading && filtered.length > 0 && (
-                    <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+                    <Card>
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="border-b border-white/10">
+                                    <tr className="border-b border-border">
                                         {[
                                             "Customer",
                                             "Service",
@@ -229,7 +280,7 @@ export default function AdminPage() {
                                         ].map((h) => (
                                             <th
                                                 key={h}
-                                                className="text-left px-6 py-4 text-white/40 text-sm font-semibold"
+                                                className="text-left px-6 py-4 text-muted-foreground font-medium text-xs uppercase tracking-wider"
                                             >
                                                 {h}
                                             </th>
@@ -240,132 +291,117 @@ export default function AdminPage() {
                                     {filtered.map((booking, i) => (
                                         <tr
                                             key={booking._id}
-                                            className={`border-b border-white/5 hover:bg-white/5 transition-colors ${
-                                                i === filtered.length - 1
-                                                    ? "border-b-0"
+                                            className={`hover:bg-muted/50 transition-colors ${
+                                                i !== filtered.length - 1
+                                                    ? "border-b border-border"
                                                     : ""
                                             }`}
                                         >
-                                            {/* Customer */}
                                             <td className="px-6 py-4">
-                                                <p className="text-white font-semibold">
+                                                <p className="font-medium">
                                                     {booking.userName}
                                                 </p>
-                                                <p className="text-white/40 text-sm">
+                                                <p className="text-muted-foreground text-xs">
                                                     {booking.userEmail}
                                                 </p>
                                             </td>
-
-                                            {/* Service */}
                                             <td className="px-6 py-4">
-                                                <p className="text-white">
+                                                <p className="font-medium">
                                                     {booking.serviceName}
                                                 </p>
                                             </td>
-
-                                            {/* Date & Time */}
                                             <td className="px-6 py-4">
-                                                <p className="text-white">
-                                                    {booking.date}
-                                                </p>
-                                                <p className="text-white/40 text-sm">
+                                                <p>{booking.date}</p>
+                                                <p className="text-muted-foreground text-xs">
                                                     {booking.time}
                                                 </p>
                                             </td>
-
-                                            {/* Amount */}
                                             <td className="px-6 py-4">
-                                                <p className="text-purple-400 font-bold">
+                                                <p className="font-bold">
                                                     ${booking.servicePrice}
                                                 </p>
                                             </td>
-
-                                            {/* Status */}
                                             <td className="px-6 py-4">
-                                                <span
-                                                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${
-                                                        statusStyles[
+                                                <Badge
+                                                    variant={
+                                                        statusConfig[
                                                             booking.status as BookingStatus
-                                                        ]
-                                                    }`}
+                                                        ].variant
+                                                    }
                                                 >
                                                     {
-                                                        statusIcons[
+                                                        statusConfig[
                                                             booking.status as BookingStatus
-                                                        ]
+                                                        ].label
                                                     }
-                                                    {booking.status}
-                                                </span>
+                                                </Badge>
                                             </td>
-
-                                            {/* Actions */}
                                             <td className="px-6 py-4">
-                                                <div className="flex gap-2">
+                                                <div className="flex gap-2 flex-wrap">
                                                     {booking.status !==
                                                         "paid" && (
-                                                        <button
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            disabled={
+                                                                updating ===
+                                                                booking._id
+                                                            }
                                                             onClick={() =>
                                                                 updateStatus(
-                                                                    String(
-                                                                        booking._id,
-                                                                    ),
+                                                                    booking._id,
                                                                     "paid",
                                                                 )
                                                             }
-                                                            disabled={
-                                                                updating ===
-                                                                String(
-                                                                    booking._id,
-                                                                )
-                                                            }
-                                                            className="text-xs bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 px-3 py-1 rounded-lg transition-colors disabled:opacity-50"
+                                                            className="text-xs h-7"
                                                         >
-                                                            Mark Paid
-                                                        </button>
+                                                            {updating ===
+                                                            booking._id ? (
+                                                                <Loader2 className="w-3 h-3 animate-spin" />
+                                                            ) : (
+                                                                "Mark Paid"
+                                                            )}
+                                                        </Button>
                                                     )}
                                                     {booking.status !==
                                                         "cancelled" && (
-                                                        <button
+                                                        <Button
+                                                            size="sm"
+                                                            variant="destructive"
+                                                            disabled={
+                                                                updating ===
+                                                                booking._id
+                                                            }
                                                             onClick={() =>
                                                                 updateStatus(
-                                                                    String(
-                                                                        booking._id,
-                                                                    ),
+                                                                    booking._id,
                                                                     "cancelled",
                                                                 )
                                                             }
-                                                            disabled={
-                                                                updating ===
-                                                                String(
-                                                                    booking._id,
-                                                                )
-                                                            }
-                                                            className="text-xs bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-3 py-1 rounded-lg transition-colors disabled:opacity-50"
+                                                            className="text-xs h-7"
                                                         >
                                                             Cancel
-                                                        </button>
+                                                        </Button>
                                                     )}
                                                     {booking.status !==
                                                         "pending" && (
-                                                        <button
+                                                        <Button
+                                                            size="sm"
+                                                            variant="secondary"
+                                                            disabled={
+                                                                updating ===
+                                                                booking._id
+                                                            }
                                                             onClick={() =>
                                                                 updateStatus(
-                                                                    String(
-                                                                        booking._id,
-                                                                    ),
+                                                                    booking._id,
                                                                     "pending",
                                                                 )
                                                             }
-                                                            disabled={
-                                                                updating ===
-                                                                String(
-                                                                    booking._id,
-                                                                )
-                                                            }
-                                                            className="text-xs bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 border border-yellow-500/30 px-3 py-1 rounded-lg transition-colors disabled:opacity-50"
+                                                            className="text-xs h-7"
                                                         >
                                                             Pending
-                                                        </button>
+                                                        </Button>
                                                     )}
                                                 </div>
                                             </td>
@@ -374,7 +410,7 @@ export default function AdminPage() {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </Card>
                 )}
             </div>
         </main>

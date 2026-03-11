@@ -1,3 +1,4 @@
+import { AppError } from "@/lib/errors";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -26,10 +27,7 @@ export async function POST(req: NextRequest) {
             !date ||
             !time
         ) {
-            return NextResponse.json(
-                { error: "Missing required fields" },
-                { status: 400 },
-            );
+            throw new AppError("Missing required fields", 400);
         }
 
         // Create Stripe Checkout Session

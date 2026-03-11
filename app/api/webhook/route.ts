@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/mongodb";
 import Booking from "@/models/Booking";
 import { NextRequest, NextResponse } from "next/server";
 
+import { handleApiError } from "@/lib/errors";
 import { transporter } from "@/lib/mailer";
 import Stripe from "stripe";
 
@@ -19,12 +20,10 @@ export async function POST(req: NextRequest) {
             sig,
             process.env.STRIPE_WEBHOOK_SECRET as string,
         );
-    } catch (err: any) {
-        console.error("Webhook signature error:", err.message);
-        return NextResponse.json(
-            { error: `Webhook Error: ${err.message}` },
-            { status: 400 },
-        );
+    } catch (error) {
+        const { message, statusCode } = handleApiError(error);
+        console.error("Stripe checkout error:", message);
+        return NextResponse.json({ error: message }, { status: statusCode });
     }
 
     // Handle successful payment
@@ -51,7 +50,7 @@ export async function POST(req: NextRequest) {
 
             // Send confirmation email
             await transporter.sendMail({
-                from: `"DraSoft Services" <${process.env.GMAIL_USER}>`,
+                from: `"SwiftBook Services" <${process.env.GMAIL_USER}>`,
                 to: meta.userEmail, // ✅ Now sends to ANY email!
                 subject: `Booking Confirmed — ${meta.serviceName}`,
                 html: `
@@ -62,7 +61,7 @@ export async function POST(req: NextRequest) {
           
           <!-- Header -->
           <div style="background: linear-gradient(135deg, #7c3aed, #db2777); padding: 40px 32px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">⚡ DraSoft Services</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px;">⚡ SwiftBook</h1>
             <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0;">Booking Confirmation</p>
           </div>
 
@@ -102,7 +101,7 @@ export async function POST(req: NextRequest) {
 
           <!-- Footer -->
           <div style="background: #f9fafb; padding: 20px 32px; text-align: center; border-top: 1px solid #e5e7eb;">
-            <p style="color: #9ca3af; font-size: 12px; margin: 0;">© 2025 DraSoft Services. All rights reserved.</p>
+            <p style="color: #9ca3af; font-size: 12px; margin: 0;">© 2025 SwiftBook. All rights reserved.</p>
           </div>
         </div>
       </body>

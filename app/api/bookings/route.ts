@@ -1,3 +1,4 @@
+import { AppError, handleApiError } from "@/lib/errors";
 import { connectDB } from "@/lib/mongodb";
 import Booking from "@/models/Booking";
 import { NextResponse } from "next/server";
@@ -8,9 +9,9 @@ export async function GET() {
         const bookings = await Booking.find({}).sort({ createdAt: -1 });
         return NextResponse.json({ bookings });
     } catch (error) {
-        const message =
-            error instanceof Error ? error.message : "Something went wrong";
-        return NextResponse.json({ error: message }, { status: 500 });
+        const { message, statusCode } = handleApiError(error);
+        console.error("Bookings API error:", message);
+        return NextResponse.json({ error: message }, { status: statusCode });
     }
 }
 
@@ -27,16 +28,13 @@ export async function PATCH(req: Request) {
         );
 
         if (!booking) {
-            return NextResponse.json(
-                { error: "Booking not found" },
-                { status: 404 },
-            );
+            throw new AppError("Booking not found", 404);
         }
 
         return NextResponse.json({ booking });
     } catch (error) {
-        const message =
-            error instanceof Error ? error.message : "Something went wrong";
-        return NextResponse.json({ error: message }, { status: 500 });
+        const { message, statusCode } = handleApiError(error);
+        console.error("Bookings API error:", message);
+        return NextResponse.json({ error: message }, { status: statusCode });
     }
 }

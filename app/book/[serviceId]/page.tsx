@@ -1,23 +1,17 @@
 "use client";
 
+import { ModeToggle } from "@/components/mode-toggle";
+import { AnimatedBackground } from "@/components/ui/animated-background";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ErrorMessage } from "@/components/ui/error-message";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { getErrorMessage } from "@/lib/errors";
 import { services } from "@/lib/services";
 import { BookingFormData } from "@/types";
-import {
-    AlertCircle,
-    ArrowLeft,
-    Clock,
-    Loader2,
-    Lock,
-    Mail,
-    Zap,
-} from "lucide-react";
+import { ArrowLeft, Clock, Loader2, Lock, Mail, Zap } from "lucide-react";
 import Link from "next/link";
 import { use, useState } from "react";
 
@@ -42,9 +36,14 @@ export default function BookingPage({
         return (
             <main className="min-h-screen bg-background flex items-center justify-center">
                 <div className="text-center space-y-4">
-                    <p className="text-2xl font-semibold">Service not found</p>
+                    <p
+                        className="text-2xl font-bold"
+                        style={{ fontFamily: "var(--font-syne)" }}
+                    >
+                        Service not found
+                    </p>
                     <Link href="/">
-                        <Button variant="outline">
+                        <Button variant="outline" className="rounded-full">
                             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
                         </Button>
                     </Link>
@@ -94,137 +93,179 @@ export default function BookingPage({
     const today = new Date().toISOString().split("T")[0];
 
     return (
-        <main className="min-h-screen bg-background">
+        <main className="min-h-screen bg-background relative overflow-hidden">
+            <AnimatedBackground />
+
             {/* Header */}
-            <header className="border-b border-border sticky top-0 z-50 bg-background/95 backdrop-blur `supports-backdrop-filter:bg-background/60">
+            <header className="border-b border-border/50 sticky top-0 z-50 bg-background/80 backdrop-blur-xl">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     <Link href="/" className="flex items-center gap-2">
-                        <Zap className="w-5 h-5" />
-                        <span className="font-bold text-xl tracking-tight">
+                        <div className="w-7 h-7 bg-foreground rounded-lg flex items-center justify-center">
+                            <Zap className="w-4 h-4 text-background" />
+                        </div>
+                        <span
+                            className="font-bold text-xl tracking-tight"
+                            style={{ fontFamily: "var(--font-syne)" }}
+                        >
                             SwiftBook
                         </span>
                     </Link>
-                    <Link href="/">
-                        <Button variant="ghost" size="sm">
-                            <ArrowLeft className="w-4 h-4 mr-2" /> Back to
-                            Services
-                        </Button>
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <Link href="/">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground rounded-full"
+                            >
+                                <ArrowLeft className="w-4 h-4 mr-2" /> Services
+                            </Button>
+                        </Link>
+                        <ModeToggle />
+                    </div>
                 </div>
             </header>
 
-            <div className="max-w-5xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="relative max-w-5xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Service Summary */}
-                <div className="space-y-6">
+                <div className="space-y-5 animate-fade-in-up">
                     <div>
-                        <p className="text-muted-foreground text-sm uppercase tracking-widest mb-3">
+                        <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-4 font-medium">
                             {"You're booking"}
                         </p>
-                        <Card>
-                            <CardHeader>
-                                <div className="text-4xl mb-2">
-                                    {service.icon}
-                                </div>
-                                <CardTitle className="text-2xl">
+                        <div className="bg-card border border-border/60 rounded-2xl p-7 space-y-5">
+                            <div className="text-4xl">{service.icon}</div>
+                            <div>
+                                <h1
+                                    className="text-2xl font-bold tracking-tight mb-1"
+                                    style={{ fontFamily: "var(--font-syne)" }}
+                                >
                                     {service.name}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
+                                </h1>
                                 <p className="text-muted-foreground text-sm leading-relaxed">
                                     {service.description}
                                 </p>
-                                <Separator />
-                                <div className="space-y-3 text-sm">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-muted-foreground flex items-center gap-2">
-                                            <Clock className="w-4 h-4" />{" "}
-                                            Duration
-                                        </span>
-                                        <span className="font-medium">
-                                            {service.duration}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-muted-foreground">
-                                            Price
-                                        </span>
-                                        <span className="font-bold text-2xl">
-                                            ${service.price}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-muted-foreground flex items-center gap-2">
-                                            <Lock className="w-4 h-4" /> Payment
-                                        </span>
-                                        <Badge variant="secondary">
-                                            Secured by Stripe
-                                        </Badge>
-                                    </div>
+                            </div>
+
+                            <Separator className="opacity-50" />
+
+                            <div className="space-y-3 text-sm">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground flex items-center gap-2">
+                                        <Clock className="w-3.5 h-3.5" />{" "}
+                                        Duration
+                                    </span>
+                                    <span className="font-medium">
+                                        {service.duration}
+                                    </span>
                                 </div>
-                            </CardContent>
-                        </Card>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground">
+                                        Price
+                                    </span>
+                                    <span
+                                        className="font-bold text-2xl"
+                                        style={{
+                                            fontFamily: "var(--font-syne)",
+                                        }}
+                                    >
+                                        ${service.price}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground flex items-center gap-2">
+                                        <Lock className="w-3.5 h-3.5" /> Payment
+                                    </span>
+                                    <Badge
+                                        variant="secondary"
+                                        className="text-xs font-normal"
+                                    >
+                                        Secured by Stripe
+                                    </Badge>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Trust badges */}
                     <div className="grid grid-cols-3 gap-3">
                         {[
                             {
-                                icon: <Lock className="w-4 h-4" />,
-                                text: "Secure Payment",
+                                icon: <Lock className="w-3.5 h-3.5" />,
+                                text: "Secure",
                             },
                             {
-                                icon: <Zap className="w-4 h-4" />,
-                                text: "Instant Confirm",
+                                icon: <Zap className="w-3.5 h-3.5" />,
+                                text: "Instant",
                             },
                             {
-                                icon: <Mail className="w-4 h-4" />,
-                                text: "Email Receipt",
+                                icon: <Mail className="w-3.5 h-3.5" />,
+                                text: "Receipt",
                             },
                         ].map((badge) => (
-                            <Card key={badge.text} className="p-3 text-center">
-                                <div className="flex justify-center mb-1 text-muted-foreground">
+                            <div
+                                key={badge.text}
+                                className="bg-card border border-border/60 rounded-xl p-3 text-center"
+                            >
+                                <div className="flex justify-center mb-1.5 text-muted-foreground">
                                     {badge.icon}
                                 </div>
                                 <p className="text-xs text-muted-foreground">
                                     {badge.text}
                                 </p>
-                            </Card>
+                            </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Booking Form */}
-                <div className="space-y-4">
-                    <p className="text-muted-foreground text-sm uppercase tracking-widest">
+                <div className="space-y-4 animate-fade-in-up delay-100">
+                    <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-medium">
                         Your Details
                     </p>
-                    <Card>
-                        <CardContent className="pt-6 space-y-5">
-                            <div className="space-y-2">
-                                <Label htmlFor="userName">Full Name</Label>
-                                <Input
-                                    id="userName"
-                                    name="userName"
-                                    value={form.userName}
-                                    onChange={handleChange}
-                                    placeholder="John Doe"
-                                />
-                            </div>
+                    <div className="bg-card border border-border/60 rounded-2xl p-7 space-y-5">
+                        <div className="space-y-2">
+                            <Label
+                                htmlFor="userName"
+                                className="text-sm font-medium"
+                            >
+                                Full Name
+                            </Label>
+                            <Input
+                                id="userName"
+                                name="userName"
+                                value={form.userName}
+                                onChange={handleChange}
+                                placeholder="John Doe"
+                                className="h-11 rounded-xl border-border/60 bg-background/50"
+                            />
+                        </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="userEmail">Email Address</Label>
-                                <Input
-                                    id="userEmail"
-                                    name="userEmail"
-                                    type="email"
-                                    value={form.userEmail}
-                                    onChange={handleChange}
-                                    placeholder="john@example.com"
-                                />
-                            </div>
+                        <div className="space-y-2">
+                            <Label
+                                htmlFor="userEmail"
+                                className="text-sm font-medium"
+                            >
+                                Email Address
+                            </Label>
+                            <Input
+                                id="userEmail"
+                                name="userEmail"
+                                type="email"
+                                value={form.userEmail}
+                                onChange={handleChange}
+                                placeholder="john@example.com"
+                                className="h-11 rounded-xl border-border/60 bg-background/50"
+                            />
+                        </div>
 
+                        <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="date">Preferred Date</Label>
+                                <Label
+                                    htmlFor="date"
+                                    className="text-sm font-medium"
+                                >
+                                    Date
+                                </Label>
                                 <Input
                                     id="date"
                                     name="date"
@@ -232,55 +273,51 @@ export default function BookingPage({
                                     value={form.date}
                                     onChange={handleChange}
                                     min={today}
-                                    className="scheme-dark"
+                                    className="h-11 rounded-xl border-border/60 bg-background/50 [color-scheme:dark]"
                                 />
                             </div>
-
                             <div className="space-y-2">
-                                <Label htmlFor="time">Preferred Time</Label>
+                                <Label
+                                    htmlFor="time"
+                                    className="text-sm font-medium"
+                                >
+                                    Time
+                                </Label>
                                 <Input
                                     id="time"
                                     name="time"
                                     type="time"
                                     value={form.time}
                                     onChange={handleChange}
-                                    className="scheme-dark"
+                                    className="h-11 rounded-xl border-border/60 bg-background/50 [color-scheme:dark]"
                                 />
                             </div>
+                        </div>
 
-                            {error && (
-                                <div className="flex items-center gap-2 text-destructive text-sm bg-destructive/10 border border-destructive/20 rounded-md px-4 py-3">
-                                    <AlertCircle className="w-4 h-4 shrink-0" />
-                                    <span>{error}</span>
-                                </div>
+                        {error && <ErrorMessage message={error} />}
+
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={loading}
+                            className="w-full h-12 rounded-xl text-sm font-medium"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Redirecting to Stripe...
+                                </>
+                            ) : (
+                                <>
+                                    <Lock className="w-4 h-4 mr-2" />
+                                    Pay ${service.price} · Secure Checkout
+                                </>
                             )}
+                        </Button>
 
-                            <Button
-                                onClick={handleSubmit}
-                                disabled={loading}
-                                className="w-full"
-                                size="lg"
-                            >
-                                {loading ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        Redirecting to Stripe...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Lock className="w-4 h-4 mr-2" />
-                                        Pay ${service.price} → Checkout
-                                    </>
-                                )}
-                            </Button>
-
-                            <p className="text-muted-foreground text-xs text-center">
-                                {
-                                    "You'll be redirected to Stripe's secure checkout page"
-                                }
-                            </p>
-                        </CardContent>
-                    </Card>
+                        <p className="text-muted-foreground text-xs text-center">
+                            {"Redirected to Stripe's encrypted checkout"}
+                        </p>
+                    </div>
                 </div>
             </div>
         </main>

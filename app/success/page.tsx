@@ -1,52 +1,83 @@
+import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { CheckCircle2, Mail, Zap } from "lucide-react";
 import Link from "next/link";
 
 export default function SuccessPage() {
     return (
-        <main className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center px-6">
-            <div className="max-w-md w-full text-center">
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-10">
-                    {/* Success Icon */}
-                    <div className="w-20 h-20 bg-green-500/20 border border-green-500/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg
-                            className="w-10 h-10 text-green-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                            />
-                        </svg>
+        <main className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center px-6">
+            {/* Aurora */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                <div className="aurora-1 absolute top-0 left-1/4 w-125 h-125 rounded-full bg-linear-to-br from-zinc-300/20 to-transparent dark:from-zinc-700/30 dark:to-transparent blur-3xl" />
+            </div>
+
+            {/* Mode toggle top right */}
+            <div className="fixed top-4 right-6 z-50">
+                <ModeToggle />
+            </div>
+
+            <div className="relative max-w-sm w-full animate-fade-in-up">
+                {/* Logo */}
+                <div className="flex items-center justify-center gap-2 mb-10">
+                    <div className="w-7 h-7 bg-foreground rounded-lg flex items-center justify-center">
+                        <Zap className="w-4 h-4 text-background" />
                     </div>
-
-                    <h1 className="text-white font-bold text-3xl mb-3">
-                        Booking Confirmed!
-                    </h1>
-                    <p className="text-white/50 mb-6 leading-relaxed">
-                        Your payment was successful. A confirmation email has
-                        been sent to your inbox with all booking details.
-                    </p>
-
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-8 text-left space-y-2">
-                        <p className="text-white/40 text-sm">
-                            ✅ Payment received
-                        </p>
-                        <p className="text-white/40 text-sm">
-                            ✅ Booking confirmed
-                        </p>
-                        <p className="text-white/40 text-sm">
-                            ✅ Confirmation email sent
-                        </p>
-                    </div>
-
-                    <Link
-                        href="/"
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-semibold transition-all hover:scale-105 block"
+                    <span
+                        className="font-bold text-xl tracking-tight"
+                        style={{ fontFamily: "var(--font-syne)" }}
                     >
-                        Back to Home
+                        SwiftBook
+                    </span>
+                </div>
+
+                <div className="bg-card border border-border/60 rounded-2xl p-8 text-center space-y-6">
+                    {/* Icon */}
+                    <div className="flex justify-center">
+                        <div className="w-16 h-16 rounded-full border border-border/60 bg-background flex items-center justify-center">
+                            <CheckCircle2 className="w-7 h-7 text-foreground" />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <h1
+                            className="text-2xl font-bold tracking-tight"
+                            style={{ fontFamily: "var(--font-syne)" }}
+                        >
+                            Booking Confirmed
+                        </h1>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                            Payment successful. A confirmation email has been
+                            sent with your booking details.
+                        </p>
+                    </div>
+
+                    <Separator className="opacity-50" />
+
+                    <div className="space-y-2.5 text-left">
+                        {[
+                            "Payment received & verified",
+                            "Booking confirmed in system",
+                            "Confirmation email sent",
+                        ].map((item) => (
+                            <div key={item} className="flex items-center gap-3">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-foreground shrink-0" />
+                                <span className="text-muted-foreground text-sm">
+                                    {item}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex items-center justify-center gap-2 text-muted-foreground text-xs">
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>Check your inbox for the confirmation</span>
+                    </div>
+
+                    <Link href="/" className="block">
+                        <Button className="w-full rounded-xl h-11 text-sm">
+                            Back to Home
+                        </Button>
                     </Link>
                 </div>
             </div>
