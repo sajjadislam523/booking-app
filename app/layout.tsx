@@ -13,20 +13,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "DraSoft Services — Book Professional Services Online",
+    title: "SwiftBook — Fast & Secure Service Booking",
     description:
-        "Book professional web development, design, and tech services securely online.",
+        "Book professional services instantly and pay securely online.",
 };
 
 export default function RootLayout({
     children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="en" suppressHydrationWarning>
+        <html lang="en" className="dark" suppressHydrationWarning>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}
                 suppressHydrationWarning
             >
                 {children}

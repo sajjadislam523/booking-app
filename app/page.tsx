@@ -1,87 +1,176 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { services } from "@/lib/services";
 import { Service } from "@/types";
+import { ArrowRight, Clock, Shield, Zap } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
     return (
-        <main className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
-            <header className="border-b border-white/10 backdrop-blur-sm sticky top-0 z-50">
+        <main className="min-h-screen bg-background">
+            {/* Header */}
+            <header className="border-b border-border sticky top-0 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        <span className="text-2xl">⚡</span>
-                        <span className="text-white font-bold text-xl">
-                            DraSoft Services
+                        <Zap className="w-5 h-5 text-foreground" />
+                        <span className="font-bold text-xl tracking-tight">
+                            SwiftBook
                         </span>
                     </div>
-                    <Link
-                        href="/admin"
-                        className="text-sm text-white/60 hover:text-white transition-colors border border-white/20 hover:border-white/40 px-4 py-2 rounded-lg"
-                    >
-                        Admin Panel →
+                    <Link href="/admin">
+                        <Button variant="outline" size="sm">
+                            Admin Panel <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
                     </Link>
                 </div>
             </header>
 
-            <section className="max-w-7xl mx-auto px-6 py-20 text-center">
-                <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                    Book Professional
-                    <span className="bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                        Services
+            {/* Hero */}
+            <section className="max-w-7xl mx-auto px-6 py-24 text-center">
+                <Badge
+                    variant="secondary"
+                    className="mb-6 text-xs tracking-widest uppercase"
+                >
+                    Professional Services
+                </Badge>
+                <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-none">
+                    Book Services
+                    <br />
+                    <span className="text-muted-foreground">
+                        Instantly Online
                     </span>
-                    Online
                 </h1>
-                <p className="text-white/60 text-xl max-w-2xl mx-auto mb-10">
+                <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-10">
                     Choose from our range of professional services, book
                     instantly, and pay securely with Stripe.
                 </p>
-
-                <a
-                    href="#services"
-                    className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all hover:scale-105 inline-block"
-                >
-                    Browse Services
-                </a>
-            </section>
-            <section id="services" className="max-w-7xl mx-auto px-6 pb-20">
-                <h2 className="text-3xl font-bold text-white text-center mb-12">
-                    Our Services
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {services.map((service: Service) => (
-                        <div
-                            key={service.id}
-                            className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-purple-500/50 transition-all group"
+                <div className="flex items-center justify-center gap-4 flex-wrap">
+                    <a href="#services">
+                        <Button size="lg" className="rounded-full px-8">
+                            Browse Services{" "}
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                    </a>
+                    <Link href="/admin">
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            className="rounded-full px-8"
                         >
-                            <div className="text-4xl mb-4">{service.icon}</div>
-                            <h3 className="text-white font-bold text-xl mb-2">
-                                {service.name}
-                            </h3>
-                            <p className="text-white/50 text-sm mb-4 leading-relaxed">
-                                {service.description}
-                            </p>
-                            <div className="flex items-center justify-between mb-6">
-                                <div>
-                                    <span className="text-purple-400 font-bold text-2xl">
-                                        ${service.price}
-                                    </span>
-                                </div>
-                                <span className="text-white/40 text-sm bg-white/5 px-3 py-1 rounded-full">
-                                    ⏱ {service.duration}
-                                </span>
-                            </div>
-                            <Link
-                                href={`/book/${service.id}`}
-                                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-semibold transition-all group-hover:scale-105 text-center block"
-                            >
-                                Book Now
-                            </Link>
+                            View Admin Panel
+                        </Button>
+                    </Link>
+                </div>
+
+                {/* Trust bar */}
+                <div className="mt-16 flex items-center justify-center gap-8 flex-wrap text-muted-foreground text-sm">
+                    {[
+                        {
+                            icon: <Shield className="w-4 h-4" />,
+                            text: "Stripe Secured",
+                        },
+                        {
+                            icon: <Zap className="w-4 h-4" />,
+                            text: "Instant Confirmation",
+                        },
+                        {
+                            icon: <Clock className="w-4 h-4" />,
+                            text: "24/7 Availability",
+                        },
+                    ].map((item) => (
+                        <div
+                            key={item.text}
+                            className="flex items-center gap-2"
+                        >
+                            {item.icon}
+                            <span>{item.text}</span>
                         </div>
                     ))}
                 </div>
             </section>
 
-            <footer className="border-t border-white/10 text-center py-8 text-white/30 text-sm">
-                © 2025 DraSoft Services. All rights reserved.
+            <Separator />
+
+            {/* Services */}
+            <section id="services" className="max-w-7xl mx-auto px-6 py-24">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl font-bold tracking-tight mb-3">
+                        Our Services
+                    </h2>
+                    <p className="text-muted-foreground">
+                        Everything you need, all in one place
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {services.map((service: Service) => (
+                        <Card
+                            key={service.id}
+                            className="group hover:border-foreground/50 transition-all duration-200 flex flex-col"
+                        >
+                            <CardHeader className="pb-3">
+                                <div className="text-3xl mb-3">
+                                    {service.icon}
+                                </div>
+                                <div className="flex items-start justify-between gap-2">
+                                    <h3 className="font-semibold text-lg leading-tight">
+                                        {service.name}
+                                    </h3>
+                                    <Badge
+                                        variant="secondary"
+                                        className="shrink-0 text-xs"
+                                    >
+                                        <Clock className="w-3 h-3 mr-1" />
+                                        {service.duration}
+                                    </Badge>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="flex-1">
+                                <p className="text-muted-foreground text-sm leading-relaxed">
+                                    {service.description}
+                                </p>
+                            </CardContent>
+                            <CardFooter className="flex items-center justify-between pt-4 border-t border-border">
+                                <span className="font-bold text-2xl">
+                                    ${service.price}
+                                </span>
+                                <Link href={`/book/${service.id}`}>
+                                    <Button
+                                        size="sm"
+                                        className="rounded-full group-hover:gap-2 transition-all"
+                                    >
+                                        Book Now{" "}
+                                        <ArrowRight className="w-4 h-4 ml-1" />
+                                    </Button>
+                                </Link>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
+            </section>
+
+            {/* Footer */}
+            <Separator />
+            <footer className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-muted-foreground text-sm">
+                <div className="flex items-center gap-2">
+                    <Zap className="w-4 h-4" />
+                    <span className="font-semibold text-foreground">
+                        SwiftBook
+                    </span>
+                </div>
+                <p>© 2025 SwiftBook. All rights reserved.</p>
+                <Link href="/admin">
+                    <Button variant="ghost" size="sm">
+                        Admin Panel
+                    </Button>
+                </Link>
             </footer>
         </main>
     );

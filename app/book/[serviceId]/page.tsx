@@ -1,7 +1,23 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { getErrorMessage } from "@/lib/errors";
 import { services } from "@/lib/services";
 import { BookingFormData } from "@/types";
+import {
+    AlertCircle,
+    ArrowLeft,
+    Clock,
+    Loader2,
+    Lock,
+    Mail,
+    Zap,
+} from "lucide-react";
 import Link from "next/link";
 import { use, useState } from "react";
 
@@ -10,7 +26,6 @@ export default function BookingPage({
 }: {
     params: Promise<{ serviceId: string }>;
 }) {
-    // Unwrap params with React.use()
     const { serviceId } = use(params);
     const service = services.find((s) => s.id === serviceId);
 
@@ -25,13 +40,13 @@ export default function BookingPage({
 
     if (!service) {
         return (
-            <main className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-                <div className="text-center">
-                    <p className="text-white text-2xl mb-4">
-                        Service not found
-                    </p>
-                    <Link href="/" className="text-purple-400 hover:underline">
-                        Go back home
+            <main className="min-h-screen bg-background flex items-center justify-center">
+                <div className="text-center space-y-4">
+                    <p className="text-2xl font-semibold">Service not found</p>
+                    <Link href="/">
+                        <Button variant="outline">
+                            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
+                        </Button>
                     </Link>
                 </div>
             </main>
@@ -67,13 +82,11 @@ export default function BookingPage({
                 }),
             });
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Something went wrong");
-            window.location.href = data.url;
+            const data: { url?: string; error?: string } = await res.json();
+            if (!res.ok) throw new Error(data.error ?? "Something went wrong");
+            if (data.url) window.location.href = data.url;
         } catch (err) {
-            const message =
-                err instanceof Error ? err.message : "Something went wrong";
-            setError(message);
+            setError(getErrorMessage(err));
             setLoading(false);
         }
     };
@@ -81,178 +94,193 @@ export default function BookingPage({
     const today = new Date().toISOString().split("T")[0];
 
     return (
-        <main className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
-            <header className="border-b border-white/10 backdrop-blur-sm sticky top-0 z-50">
+        <main className="min-h-screen bg-background">
+            {/* Header */}
+            <header className="border-b border-border sticky top-0 z-50 bg-background/95 backdrop-blur `supports-backdrop-filter:bg-background/60">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     <Link href="/" className="flex items-center gap-2">
-                        <span className="text-2xl">⚡</span>
-                        <span className="text-white font-bold text-xl">
-                            DraSoft Services
+                        <Zap className="w-5 h-5" />
+                        <span className="font-bold text-xl tracking-tight">
+                            SwiftBook
                         </span>
                     </Link>
-                    <Link
-                        href="/"
-                        className="text-sm text-white/60 hover:text-white transition-colors"
-                    >
-                        ← Back to Services
+                    <Link href="/">
+                        <Button variant="ghost" size="sm">
+                            <ArrowLeft className="w-4 h-4 mr-2" /> Back to
+                            Services
+                        </Button>
                     </Link>
                 </div>
             </header>
 
             <div className="max-w-5xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Service Summary */}
-                <div>
-                    <p className="text-purple-400 font-semibold mb-3 uppercase tracking-widest text-sm">
-                        {"You're booking"}
-                    </p>
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-                        <div className="text-6xl mb-6">{service.icon}</div>
-                        <h1 className="text-white font-bold text-3xl mb-3">
-                            {service.name}
-                        </h1>
-                        <p className="text-white/50 leading-relaxed mb-6">
-                            {service.description}
+                <div className="space-y-6">
+                    <div>
+                        <p className="text-muted-foreground text-sm uppercase tracking-widest mb-3">
+                            {"You're booking"}
                         </p>
-                        <div className="border-t border-white/10 pt-6 space-y-3">
-                            <div className="flex justify-between text-white/60">
-                                <span>Duration</span>
-                                <span className="text-white">
-                                    {service.duration}
-                                </span>
-                            </div>
-                            <div className="flex justify-between text-white/60">
-                                <span>Price</span>
-                                <span className="text-purple-400 font-bold text-xl">
-                                    ${service.price}
-                                </span>
-                            </div>
-                            <div className="flex justify-between text-white/60">
-                                <span>Payment</span>
-                                <span className="text-white">
-                                    Secured by Stripe
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mt-6 grid grid-cols-3 gap-3">
-                        {[
-                            { icon: "🔒", text: "Secure Payment" },
-                            { icon: "✅", text: "Instant Confirm" },
-                            { icon: "📧", text: "Email Receipt" },
-                        ].map((badge) => (
-                            <div
-                                key={badge.text}
-                                className="bg-white/5 border border-white/10 rounded-xl p-3 text-center"
-                            >
-                                <div className="text-xl mb-1">{badge.icon}</div>
-                                <div className="text-white/50 text-xs">
-                                    {badge.text}
+                        <Card>
+                            <CardHeader>
+                                <div className="text-4xl mb-2">
+                                    {service.icon}
                                 </div>
-                            </div>
+                                <CardTitle className="text-2xl">
+                                    {service.name}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <p className="text-muted-foreground text-sm leading-relaxed">
+                                    {service.description}
+                                </p>
+                                <Separator />
+                                <div className="space-y-3 text-sm">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-muted-foreground flex items-center gap-2">
+                                            <Clock className="w-4 h-4" />{" "}
+                                            Duration
+                                        </span>
+                                        <span className="font-medium">
+                                            {service.duration}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-muted-foreground">
+                                            Price
+                                        </span>
+                                        <span className="font-bold text-2xl">
+                                            ${service.price}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-muted-foreground flex items-center gap-2">
+                                            <Lock className="w-4 h-4" /> Payment
+                                        </span>
+                                        <Badge variant="secondary">
+                                            Secured by Stripe
+                                        </Badge>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Trust badges */}
+                    <div className="grid grid-cols-3 gap-3">
+                        {[
+                            {
+                                icon: <Lock className="w-4 h-4" />,
+                                text: "Secure Payment",
+                            },
+                            {
+                                icon: <Zap className="w-4 h-4" />,
+                                text: "Instant Confirm",
+                            },
+                            {
+                                icon: <Mail className="w-4 h-4" />,
+                                text: "Email Receipt",
+                            },
+                        ].map((badge) => (
+                            <Card key={badge.text} className="p-3 text-center">
+                                <div className="flex justify-center mb-1 text-muted-foreground">
+                                    {badge.icon}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {badge.text}
+                                </p>
+                            </Card>
                         ))}
                     </div>
                 </div>
 
                 {/* Booking Form */}
-                <div>
-                    <p className="text-purple-400 font-semibold mb-3 uppercase tracking-widest text-sm">
+                <div className="space-y-4">
+                    <p className="text-muted-foreground text-sm uppercase tracking-widest">
                         Your Details
                     </p>
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-8 space-y-5">
-                        <div>
-                            <label className="text-white/70 text-sm mb-2 block">
-                                Full Name
-                            </label>
-                            <input
-                                type="text"
-                                name="userName"
-                                value={form.userName}
-                                onChange={handleChange}
-                                placeholder="John Doe"
-                                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-500 transition-colors"
-                            />
-                        </div>
-                        <div>
-                            <label className="text-white/70 text-sm mb-2 block">
-                                Email Address
-                            </label>
-                            <input
-                                type="email"
-                                name="userEmail"
-                                value={form.userEmail}
-                                onChange={handleChange}
-                                placeholder="john@example.com"
-                                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-500 transition-colors"
-                            />
-                        </div>
-                        <div>
-                            <label className="text-white/70 text-sm mb-2 block">
-                                Preferred Date
-                            </label>
-                            <input
-                                type="date"
-                                name="date"
-                                value={form.date}
-                                onChange={handleChange}
-                                min={today}
-                                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors scheme-dark"
-                            />
-                        </div>
-                        <div>
-                            <label className="text-white/70 text-sm mb-2 block">
-                                Preferred Time
-                            </label>
-                            <input
-                                type="time"
-                                name="time"
-                                value={form.time}
-                                onChange={handleChange}
-                                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors scheme-dark"
-                            />
-                        </div>
-                        {error && (
-                            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
-                                ⚠️ {error}
+                    <Card>
+                        <CardContent className="pt-6 space-y-5">
+                            <div className="space-y-2">
+                                <Label htmlFor="userName">Full Name</Label>
+                                <Input
+                                    id="userName"
+                                    name="userName"
+                                    value={form.userName}
+                                    onChange={handleChange}
+                                    placeholder="John Doe"
+                                />
                             </div>
-                        )}
-                        <button
-                            onClick={handleSubmit}
-                            disabled={loading}
-                            className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-xl font-bold text-lg transition-all hover:scale-105 mt-2"
-                        >
-                            {loading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <svg
-                                        className="animate-spin h-5 w-5"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                    >
-                                        <circle
-                                            className="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            strokeWidth="4"
-                                        />
-                                        <path
-                                            className="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8v8z"
-                                        />
-                                    </svg>
-                                    Redirecting to Stripe...
-                                </span>
-                            ) : (
-                                `Pay $${service.price} → Checkout`
+
+                            <div className="space-y-2">
+                                <Label htmlFor="userEmail">Email Address</Label>
+                                <Input
+                                    id="userEmail"
+                                    name="userEmail"
+                                    type="email"
+                                    value={form.userEmail}
+                                    onChange={handleChange}
+                                    placeholder="john@example.com"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="date">Preferred Date</Label>
+                                <Input
+                                    id="date"
+                                    name="date"
+                                    type="date"
+                                    value={form.date}
+                                    onChange={handleChange}
+                                    min={today}
+                                    className="scheme-dark"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="time">Preferred Time</Label>
+                                <Input
+                                    id="time"
+                                    name="time"
+                                    type="time"
+                                    value={form.time}
+                                    onChange={handleChange}
+                                    className="scheme-dark"
+                                />
+                            </div>
+
+                            {error && (
+                                <div className="flex items-center gap-2 text-destructive text-sm bg-destructive/10 border border-destructive/20 rounded-md px-4 py-3">
+                                    <AlertCircle className="w-4 h-4 shrink-0" />
+                                    <span>{error}</span>
+                                </div>
                             )}
-                        </button>
-                        <p className="text-white/30 text-xs text-center">
-                            {
-                                "You'll be redirected to Stripe's secure checkout page"
-                            }
-                        </p>
-                    </div>
+
+                            <Button
+                                onClick={handleSubmit}
+                                disabled={loading}
+                                className="w-full"
+                                size="lg"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        Redirecting to Stripe...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock className="w-4 h-4 mr-2" />
+                                        Pay ${service.price} → Checkout
+                                    </>
+                                )}
+                            </Button>
+
+                            <p className="text-muted-foreground text-xs text-center">
+                                {
+                                    "You'll be redirected to Stripe's secure checkout page"
+                                }
+                            </p>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </main>
