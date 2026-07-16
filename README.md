@@ -386,7 +386,7 @@ All `catch` blocks use `unknown` type instead of `any`, following strict TypeScr
 
 **Sajjad Islam**
 
-- Portfolio: [sajjadislam.vercel.app](https://sajjadislam.vercel.app)
+- Portfolio: [sajjadulislam.vercel.app](https://sajjadulislam.vercel.app/)
 - GitHub: [@sajjadislam523](https://github.com/sajjadislam523)
 
 ---
